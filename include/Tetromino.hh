@@ -2,6 +2,7 @@
 #define TETROMINO_H
 
 #include <SDL2/SDL.h>
+#include <vector>
 
 namespace Tetromino {
     class Tetromino {
@@ -16,7 +17,7 @@ namespace Tetromino {
             int getY();
             ~Tetromino();
         private:
-            bool tetromino[4][4] {0};
+            std::vector<std::vector<bool>> tetromino;
             int x, y;
     };
 }

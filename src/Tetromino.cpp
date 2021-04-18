@@ -34,30 +34,36 @@ namespace Tetromino {
             {1,1,1,1}
         }
     };*/
-    static bool tetro_array[5][4][4] = {
+    std::vector<std::vector<std::vector<bool>>> tetro_array = {
+//    static bool tetro_array[5][4][4] = {
         {
-            {0,0,0,0},
-            {0,0,1,0},
-            {0,1,1,1},
-            {0,0,0,0}
+            {0,1,0},
+            {1,1,1},
+            {0,0,0},
         },
         {
-            {0,0,0,0},
-            {0,1,1,0},
-            {0,1,0,0},
-            {0,1,0,0}
+            {1,0,0},
+            {1,1,1},
+            {0,0,0},
         },
         {
-            {0,0,0,0},
-            {0,0,1,0},
-            {0,1,1,0},
-            {0,1,0,0}
+            {0,0,1},
+            {1,1,1},
+            {0,0,0},
         },
         {
-            {0,0,0,0},
-            {0,1,1,0},
-            {0,1,1,0},
-            {0,0,0,0}
+            {1,1},
+            {1,1},
+        },
+        {
+            {0,1,1},
+            {1,1,0},
+            {0,0,0},
+        },
+        {
+            {1,1,0},
+            {0,1,1},
+            {0,0,0},
         },
         {
             {0,0,0,0},
@@ -73,57 +79,48 @@ namespace Tetromino {
     }
 
     void Tetromino::Generate() {
-        uint8_t generated = rand() % 5;
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 4; j++) {
-                tetromino[i][j] = tetro_array[generated][j][i];
+        uint8_t generated = rand() % tetro_array.size();
+        tetromino = {};
+        for(int i = 0; i < tetro_array[generated][0].size(); i++) {
+            std::vector<bool> tmp;
+            for(int j = 0; j < tetro_array[generated][1].size(); j++) {
+                tmp.push_back(tetro_array[generated][j][i]);
             }
+            tetromino.push_back(tmp);
         }
     }
 
     void Tetromino::Rotate() {
-        bool tmp[4][4];
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 4; j++) {
-                tmp[i][j] = tetromino[i][j];
-            }
-        }
         // Consider all squares one by one
-        for (int x = 0; x < 2; x++) {
+        for (int x = 0; x < tetromino.size() / 2; x++) {
             // Consider elements in group
             // of 4 in current square
-            for (int y = x; y < 4 - x - 1; y++) {
+            for (int y = x; y < tetromino.size() - x - 1; y++) {
                 // Store current cell in
                 // temp variable
                 bool temp = tetromino[x][y];
      
                 // Move values from right to top
-                tetromino[x][y] = tetromino[y][4 - 1 - x];
+                tetromino[x][y] = tetromino[y][tetromino.size() - 1 - x];
      
                 // Move values from bottom to right
-                tetromino[y][4 - 1 - x]
-                    = tetromino[4 - 1 - x][4 - 1 - y];
+                tetromino[y][tetromino.size() - 1 - x]
+                    = tetromino[tetromino.size() - 1 - x][tetromino.size() - 1 - y];
      
                 // Move values from left to bottom
-                tetromino[4 - 1 - x][4 - 1 - y]
-                    = tetromino[4 - 1 - y][x];
+                tetromino[tetromino.size() - 1 - x][tetromino.size() - 1 - y]
+                    = tetromino[tetromino.size() - 1 - y][x];
      
                 // Assign temp to left
-                tetromino[4 - 1 - y][x] = temp;
+                tetromino[tetromino.size() - 1 - y][x] = temp;
             }
         }
-        /*
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 4; j++) {
-                tetromino[i][j] = tmp[j][i];
-            }
-        }*/
     }
 
     void Tetromino::Draw(SDL_Renderer *p_renderer) {
         SDL_Rect rect = {0,0,30,30};
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 4; j++) {
+        for(int i = 0; i < tetromino.size(); i++) {
+            for(int j = 0; j < tetromino.size(); j++) {
                 if(tetromino[i][j]) {
                     rect.x = 100 + x * 30 + i * 30;
                     rect.y = y * 30 + j * 30;
