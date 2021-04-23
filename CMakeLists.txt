@@ -8,6 +8,7 @@ set(SOURCES
     src/Engine.cpp
     src/Stack.cpp
     src/Tetromino.cpp
+    src/Debug.cpp
 )
 
 find_package(SDL2 REQUIRED)

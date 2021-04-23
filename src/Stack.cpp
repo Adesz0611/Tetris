@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 
 #include "Stack.hh"
+#include "Debug.hh"
 
 namespace Stack {
     Stack::Stack() {
@@ -12,8 +13,6 @@ namespace Stack {
     }
 
     void Stack::Draw(SDL_Renderer *p_renderer) {
-        printf("\033[1m\033[36mEngine: \033[0mDraw\n");
-        printf("\033[1m\033[36mEngine: \033[0m%p\n", p_renderer);
         SDL_Rect rec;
         rec.w = 30;
         rec.h = 30;
