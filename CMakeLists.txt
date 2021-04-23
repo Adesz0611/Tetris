@@ -9,6 +9,7 @@ set(SOURCES
     src/Stack.cpp
     src/Tetromino.cpp
     src/Debug.cpp
+    src/Input.cpp
 )
 
 find_package(SDL2 REQUIRED)

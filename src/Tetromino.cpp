@@ -1,5 +1,7 @@
 #include <cstdlib>
+#include <cmath>
 #include "Tetromino.hh"
+#include "Debug.hh"
 
 namespace Tetromino {
 /*    static bool tetro_array[5][4][4] = {
@@ -75,6 +77,7 @@ namespace Tetromino {
     static unsigned int lastTime = 0, currentTime;
     Tetromino::Tetromino() {
         x = y = 0;
+        merged = false;
         Generate();
     }
 
@@ -90,28 +93,51 @@ namespace Tetromino {
         }
     }
 
+    bool Tetromino::checkWallCollision(Direction dir) {
+        Debug::Log("X: %d", x);
+        Debug::Log("Y: %d", y);
+        if(dir == LEFT) {
+            if(x < 0) {
+                for(int j = 0; j < tetromino.size(); j++) {
+                    if(tetromino[std::abs(x) - 1][j] == true)
+                        return true;
+                }
+            }
+        }
+        else if (dir == RIGHT) {
+            if((x + tetromino.size()) > 10) {
+                for(int j = 0; j < tetromino.size(); j++) {
+                    if(tetromino[tetromino.size() - (x + tetromino.size() - 10)][j] == true)
+                        return true;
+                }
+            }
+        }
+        else if (dir == DOWN) {
+            if(y + tetromino.size() > 19) {
+                for(int i = 0; i < tetromino.size(); i++) {
+                    if(tetromino[i][19-y] == true) {
+                        merged = true;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     void Tetromino::Rotate() {
-        // Consider all squares one by one
         for (int x = 0; x < tetromino.size() / 2; x++) {
-            // Consider elements in group
-            // of 4 in current square
             for (int y = x; y < tetromino.size() - x - 1; y++) {
-                // Store current cell in
-                // temp variable
                 bool temp = tetromino[x][y];
      
-                // Move values from right to top
                 tetromino[x][y] = tetromino[y][tetromino.size() - 1 - x];
      
-                // Move values from bottom to right
                 tetromino[y][tetromino.size() - 1 - x]
                     = tetromino[tetromino.size() - 1 - x][tetromino.size() - 1 - y];
      
-                // Move values from left to bottom
                 tetromino[tetromino.size() - 1 - x][tetromino.size() - 1 - y]
                     = tetromino[tetromino.size() - 1 - y][x];
      
-                // Assign temp to left
                 tetromino[tetromino.size() - 1 - y][x] = temp;
             }
         }
@@ -132,7 +158,9 @@ namespace Tetromino {
 
         currentTime = SDL_GetTicks();
         if (currentTime > lastTime + 800) {
-            setY(getY() + 1);
+            checkWallCollision(Direction::DOWN);
+            if(!merged)
+                setY(getY() + 1);
             lastTime = currentTime;
         }
     }

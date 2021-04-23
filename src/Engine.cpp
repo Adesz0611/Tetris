@@ -5,6 +5,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "Engine.hh"
+#include "Input.hh"
 
 namespace Engine {
 
@@ -96,25 +97,7 @@ void Engine::EventHandling()
                 shouldClose = true;
                 break;
             case SDL_KEYDOWN:
-                switch(e.key.keysym.scancode) {
-                    case SDL_SCANCODE_RIGHT:
-                        tetromino.setX(tetromino.getX() + 1);
-                        printf("Nyom!");
-                        break;
-                    case SDL_SCANCODE_LEFT:
-                        tetromino.setX(tetromino.getX() - 1);
-                        printf("Nyom!");
-                        break;
-                    case SDL_SCANCODE_DOWN:
-                        tetromino.setY(tetromino.getY() + 1);
-                        printf("Nyom!");
-                        break;
-                    case SDL_SCANCODE_UP:
-                        tetromino.Rotate();
-                        break;
-                    default:
-                        break;
-                }
+                Input::keydown(&e, &tetromino);
                 break;
             case SDL_KEYUP:
                 break;
