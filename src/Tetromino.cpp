@@ -76,47 +76,42 @@ namespace Tetromino {
     };
     static unsigned int lastTime = 0, currentTime;
     Tetromino::Tetromino() {
-        x = y = 0;
+        Reset();
+    }
+
+    void Tetromino::Reset() {
+        y = 0;
+        x = 3;
         merged = false;
         Generate();
     }
 
     void Tetromino::Generate() {
         uint8_t generated = rand() % tetro_array.size();
-        tetromino = {};
-        for(int i = 0; i < tetro_array[generated][0].size(); i++) {
-            std::vector<bool> tmp;
-            for(int j = 0; j < tetro_array[generated][1].size(); j++) {
-                tmp.push_back(tetro_array[generated][j][i]);
-            }
-            tetromino.push_back(tmp);
-        }
+        tetromino = tetro_array[generated];
     }
 
     bool Tetromino::checkWallCollision(Direction dir) {
-        Debug::Log("X: %d", x);
-        Debug::Log("Y: %d", y);
         if(dir == LEFT) {
             if(x < 0) {
-                for(int j = 0; j < tetromino.size(); j++) {
-                    if(tetromino[std::abs(x) - 1][j] == true)
+                for(int i = 0; i < tetromino.size(); i++) {
+                    if(tetromino[i][std::abs(x) - 1] == true)
                         return true;
                 }
             }
         }
         else if (dir == RIGHT) {
             if((x + tetromino.size()) > 10) {
-                for(int j = 0; j < tetromino.size(); j++) {
-                    if(tetromino[tetromino.size() - (x + tetromino.size() - 10)][j] == true)
+                for(int i = 0; i < tetromino.size(); i++) {
+                    if(tetromino[i][tetromino.size() - (x + tetromino.size() - 10)] == true)
                         return true;
                 }
             }
         }
         else if (dir == DOWN) {
             if(y + tetromino.size() > 19) {
-                for(int i = 0; i < tetromino.size(); i++) {
-                    if(tetromino[i][19-y] == true) {
-                        merged = true;
+                for(int j = 0; j < tetromino.size(); j++) {
+                    if(tetromino[19-y][j] == true) {
                         return true;
                     }
                 }
@@ -124,32 +119,89 @@ namespace Tetromino {
         }
         return false;
     }
+    
+    bool Tetromino::checkStackCollision(Direction dir, Stack::Stack stack) {
+#if 0
+        if(dir == DOWN) {
+            //Debug::Error("stack[0][2]: %d", stack.area[9][19]);
+            for(int i = 0; i < tetromino.size(); i++) {
+                //Debug::Error("X: %d, Y: %d\tX: %d, Y: %d", i, tetromino.size()-1, x+i, y+tetromino.size()-1);
+                if(/*tetromino[i][tetromino.size() - 1] == true && */stack.area[x + i][y + tetromino.size() - 1] == true) {
+                    //Debug::Error("Collide!");
+                    return true;
+                }
+            }
+        }
+#endif
+        return false;
+    }
+
+    bool Tetromino::checkFullStackCollision(Stack::Stack stack) {
+        for(int i = 0; i < tetromino.size(); i++) {
+            for(int j = 0; j < tetromino.size(); j++) {
+                if(stack.area[y + i][x + j] == true && tetromino[i][j] == true) {
+//                    merged = true;
+                    Debug::Log("Collide!");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     void Tetromino::Rotate() {
-        for (int x = 0; x < tetromino.size() / 2; x++) {
-            for (int y = x; y < tetromino.size() - x - 1; y++) {
-                bool temp = tetromino[x][y];
+        for (int i = 0; i < tetromino.size() / 2; i++) {
+            for (int j = i; j < tetromino.size() - i - 1; j++) {
+                bool temp = tetromino[i][j];
      
-                tetromino[x][y] = tetromino[y][tetromino.size() - 1 - x];
+                tetromino[i][j] = tetromino[tetromino.size() - 1 - j][i];
      
-                tetromino[y][tetromino.size() - 1 - x]
-                    = tetromino[tetromino.size() - 1 - x][tetromino.size() - 1 - y];
+                tetromino[tetromino.size() - 1 - j][i] = tetromino[tetromino.size() - 1 - i][tetromino.size() - 1 - j];
      
-                tetromino[tetromino.size() - 1 - x][tetromino.size() - 1 - y]
-                    = tetromino[tetromino.size() - 1 - y][x];
+                tetromino[tetromino.size() - 1 - i][tetromino.size() - 1 - j] = tetromino[j][tetromino.size() - 1 - i];
      
-                tetromino[tetromino.size() - 1 - y][x] = temp;
+                tetromino[j][tetromino.size() - 1 - i] = temp;
             }
         }
     }
 
-    void Tetromino::Draw(SDL_Renderer *p_renderer) {
+    void Tetromino::MergeToStack(Stack::Stack *p_stack) {
+        for(int i = 0; i < tetromino.size(); i++) {
+            for(int j = 0; j < tetromino.size(); j++) {
+                if(tetromino[i][j]) {
+                    p_stack->area[y + i][x + j] = 1;
+                }
+            }
+        }
+        
+        
+        bool can;
+        for(int i = 0; i < tetromino.size(); i++) {
+            can = true;
+            for(int j = 0; j < 10; j++) {
+                if(p_stack->area[y + i][j] == false)
+                    can = false;
+            }
+            if(can) {
+                Debug::Log("Történik a csoda!");
+                for(int k = y + i; k > 0; k--) {
+                    for(int l = 0; l < 10; l++) {
+                        p_stack->area[k][l] = p_stack->area[k-1][l];
+                    }
+                }
+            }
+        }
+        Reset();
+
+    }
+
+    void Tetromino::Draw(SDL_Renderer *p_renderer, Stack::Stack *stack) {
         SDL_Rect rect = {0,0,30,30};
         for(int i = 0; i < tetromino.size(); i++) {
             for(int j = 0; j < tetromino.size(); j++) {
                 if(tetromino[i][j]) {
-                    rect.x = 100 + x * 30 + i * 30;
-                    rect.y = y * 30 + j * 30;
+                    rect.x = 100 + x * 30 + j * 30;
+                    rect.y = y * 30 + i * 30;
                     SDL_SetRenderDrawColor(p_renderer, 20, 20, 20, 255);
                     SDL_RenderFillRect(p_renderer, &rect);
                 }
@@ -158,9 +210,13 @@ namespace Tetromino {
 
         currentTime = SDL_GetTicks();
         if (currentTime > lastTime + 800) {
-            checkWallCollision(Direction::DOWN);
-            if(!merged)
-                setY(getY() + 1);
+            if(checkWallCollision(Direction::DOWN))
+                MergeToStack(stack);
+            y++;
+            if(checkFullStackCollision(*stack)) {
+                y--;
+                MergeToStack(stack);
+            }
             lastTime = currentTime;
         }
     }

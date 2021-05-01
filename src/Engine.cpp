@@ -81,7 +81,7 @@ void Engine::Run()
         // Draw
         Draw();
         
-        SDL_Delay(16);
+        SDL_Delay(5);
         //SDL_Delay(750);
     }
 }
@@ -97,7 +97,7 @@ void Engine::EventHandling()
                 shouldClose = true;
                 break;
             case SDL_KEYDOWN:
-                Input::keydown(&e, &tetromino);
+                Input::keydown(&e, &tetromino, stack);
                 break;
             case SDL_KEYUP:
                 break;
@@ -123,7 +123,7 @@ void Engine::Draw()
     // DrawTexture(hatter, 0, 0);
 
     stack.Draw(renderer);
-    tetromino.Draw(renderer);
+    tetromino.Draw(renderer, &stack);
     DrawWalls(renderer);
 
     // Present

@@ -5,7 +5,7 @@
 #include "Tetromino.hh"
 
 namespace Input {
-    void keydown(SDL_Event *p_event, Tetromino::Tetromino *p_tetromino);
+    void keydown(SDL_Event *p_event, Tetromino::Tetromino *p_tetromino, Stack::Stack p_stack);
 }
 
 #endif

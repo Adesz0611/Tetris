@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
+#include "Stack.hh"
 
 namespace Tetromino {
     enum Direction {
@@ -15,9 +16,11 @@ namespace Tetromino {
         public:
             Tetromino();
             void Rotate();
-            void Draw(SDL_Renderer *p_renderer);
+            void Draw(SDL_Renderer *p_renderer, Stack::Stack *stack);
             void Generate();
             bool checkWallCollision(Direction dir);
+            bool checkStackCollision(Direction dir, Stack::Stack stack);
+            bool checkFullStackCollision(Stack::Stack stack);
             void setX(int p_x);
             void setY(int p_y);
             int getX();
@@ -26,6 +29,8 @@ namespace Tetromino {
             bool getMerged() { return merged; }
             ~Tetromino();
         private:
+            void Reset();
+            void MergeToStack(Stack::Stack *p_stack);
             std::vector<std::vector<bool>> tetromino;
             int x, y;
             bool merged;

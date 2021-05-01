@@ -7,9 +7,9 @@ namespace Stack {
         public:
             Stack();
             void Draw(SDL_Renderer *p_renderer);
+            bool area[20][10] {0};
             ~Stack();
         private:
-            bool area[10][20] {0};
     };
 
 }
