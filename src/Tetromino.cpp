@@ -83,6 +83,9 @@ namespace Tetromino {
         y = 0;
         x = 3;
         merged = false;
+#ifdef WITH_COLORS
+        color = rand() % ARRAY_SIZE(Stack::Colors);
+#endif
         Generate();
     }
 
@@ -170,6 +173,9 @@ namespace Tetromino {
             for(int j = 0; j < tetromino.size(); j++) {
                 if(tetromino[i][j]) {
                     p_stack->area[y + i][x + j] = 1;
+#ifdef WITH_COLORS
+                    p_stack->color[y + i][x + j] = color;
+#endif
                 }
             }
         }
@@ -187,6 +193,9 @@ namespace Tetromino {
                 for(int k = y + i; k > 0; k--) {
                     for(int l = 0; l < 10; l++) {
                         p_stack->area[k][l] = p_stack->area[k-1][l];
+#ifdef WITH_COLORS
+                        p_stack->color[k][l] = p_stack->color[k-1][l];
+#endif
                     }
                 }
             }
@@ -202,7 +211,11 @@ namespace Tetromino {
                 if(tetromino[i][j]) {
                     rect.x = 100 + x * 30 + j * 30;
                     rect.y = y * 30 + i * 30;
+#ifdef WITH_COLORS
+                    SDL_SetRenderDrawColor(p_renderer, Stack::Colors[color].r, Stack::Colors[color].g, Stack::Colors[color].b, 255);
+#else
                     SDL_SetRenderDrawColor(p_renderer, 20, 20, 20, 255);
+#endif
                     SDL_RenderFillRect(p_renderer, &rect);
                 }
             }

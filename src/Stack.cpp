@@ -17,7 +17,11 @@ namespace Stack {
                 if(area[i][j]) {
                     rec.x = 100 + j * 30;
                     rec.y = i * 30;
+#ifdef WITH_COLORS
+                    SDL_SetRenderDrawColor(p_renderer, Colors[color[i][j]].r, Colors[color[i][j]].g, Colors[color[i][j]].b, 255);
+#else
                     SDL_SetRenderDrawColor(p_renderer, 20, 20, 20, 255);
+#endif
                     SDL_RenderFillRect(p_renderer, &rec);
                 }
             }

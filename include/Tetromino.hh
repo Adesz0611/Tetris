@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
+#include <cstdint>
 #include "Stack.hh"
 
 namespace Tetromino {
@@ -34,6 +35,9 @@ namespace Tetromino {
             std::vector<std::vector<bool>> tetromino;
             int x, y;
             bool merged;
+#ifdef WITH_COLORS
+            std::uint8_t color;
+#endif
     };
 }
 
