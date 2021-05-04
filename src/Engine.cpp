@@ -81,7 +81,7 @@ void Engine::Run()
         // Draw
         Draw();
         
-        SDL_Delay(5);
+        SDL_Delay(16);
         //SDL_Delay(750);
     }
 }

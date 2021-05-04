@@ -31,6 +31,7 @@ namespace Tetromino {
             ~Tetromino();
         private:
             void Reset();
+            void Reset(Stack::Stack p_stack);
             void MergeToStack(Stack::Stack *p_stack);
             std::vector<std::vector<bool>> tetromino;
             int x, y;

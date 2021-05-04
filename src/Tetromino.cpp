@@ -89,6 +89,22 @@ namespace Tetromino {
         Generate();
     }
 
+    void Tetromino::Reset(Stack::Stack p_stack) {
+        y = 0;
+        x = 3;
+        merged = false;
+#ifdef WITH_COLORS
+        color = rand() % ARRAY_SIZE(Stack::Colors);
+#endif
+        Generate();
+/*
+        if(checkFullStackCollision(p_stack)) {
+            Debug::Error("Vége a játéknak!");
+            SDL_Delay(5000);
+        }
+*/
+}
+
     void Tetromino::Generate() {
         uint8_t generated = rand() % tetro_array.size();
         tetromino = tetro_array[generated];
@@ -200,23 +216,68 @@ namespace Tetromino {
                 }
             }
         }
-        Reset();
+        Reset(*p_stack);
 
     }
 
     void Tetromino::Draw(SDL_Renderer *p_renderer, Stack::Stack *stack) {
-        SDL_Rect rect = {0,0,30,30};
+        SDL_Rect rec;
+#ifndef WITH_COLORS
+        rec.w = rec.h = 30;
+#endif
         for(int i = 0; i < tetromino.size(); i++) {
             for(int j = 0; j < tetromino.size(); j++) {
                 if(tetromino[i][j]) {
-                    rect.x = 100 + x * 30 + j * 30;
-                    rect.y = y * 30 + i * 30;
+                    rec.y = y * 30 + i * 30;
 #ifdef WITH_COLORS
+                    rec.x = 100 + x * 30 + j * 30 + OUTLINE;
+
+                    rec.w = rec.h = 30 - 2 * OUTLINE;
+
+                    if(x + j < 9) {
+                        rec.w += OUTLINE;
+                    }
+
+                    rec.h += OUTLINE;
+
                     SDL_SetRenderDrawColor(p_renderer, Stack::Colors[color].r, Stack::Colors[color].g, Stack::Colors[color].b, 255);
 #else
+                    rec.x = 100 + x * 30 + j * 30;
                     SDL_SetRenderDrawColor(p_renderer, 20, 20, 20, 255);
 #endif
-                    SDL_RenderFillRect(p_renderer, &rect);
+                    SDL_RenderFillRect(p_renderer, &rec);
+
+#ifdef WITH_COLORS
+                    // Kirajzoljuk a szegélyeket
+                    SDL_SetRenderDrawColor(p_renderer, 20, 20, 20, 255);
+
+                    // Felső
+                    rec.x = 100 + x * 30 + j * 30;
+                    rec.y = i * 30  + y * 30 - OUTLINE;
+                    rec.w = 30 + OUTLINE;
+                    rec.h = OUTLINE;
+                    if(!i || !tetromino[i-1][j])
+                        SDL_RenderFillRect(p_renderer, &rec);
+
+                    // Alsó
+                    rec.y = i * 30 + y * 30 + 30 - OUTLINE;
+                    SDL_RenderFillRect(p_renderer, &rec);
+
+                    // Bal oldali
+                    rec.y = i * 30 + y * 30;
+                    rec.w = OUTLINE;
+                    rec.h = 30;
+                    SDL_RenderFillRect(p_renderer, &rec);
+
+                    // Jobb oldali
+                    if(j >= tetromino.size() - 1 || !tetromino[i][j + 1]) {
+                        rec.x = 100 + j * 30 + x * 30 + 30;
+                        if(x + j > 8)
+                            rec.x -= OUTLINE;
+                        SDL_RenderFillRect(p_renderer, &rec);
+                    }
+#endif
+
                 }
             }
         }
