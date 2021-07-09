@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 {
     srand(time(NULL));
 
-    Engine::Engine *engine = new Engine::Engine("Barna a nigger!", 500, 600);
+    Engine::Engine *engine = new Engine::Engine("Tetris by Adesz", 500, 600);
     engine->Run();
     delete engine;
     return 0;

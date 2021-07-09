@@ -62,10 +62,6 @@ void Engine::DrawTexture(SDL_Texture *p_texture, int p_x, int p_y)
     SDL_RenderCopy(renderer, p_texture, NULL, &dest);
 }
 
-static void test() {
-    std::printf("Teszt!\n");
-}
-
 void Engine::Run()
 {
     hatter = LoadTexture("../gfx/hatter.png");
